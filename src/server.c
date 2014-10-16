@@ -37,7 +37,7 @@ int main (int argc, char *argv[]) {
         return(2);
     }
 
-    /* configurazione asta */
+    // Asta:
     struct {
       int prezzo;
       int min;
@@ -47,7 +47,10 @@ int main (int argc, char *argv[]) {
     asta.prezzo = 10;
     asta.min = 1;
     asta.numofferte = 0;
-    int ok = 1, notok = 0, myId = 12300, n;
+    // Codici protocollo:
+    int ok = 1, notok = 0;
+    // Altro:
+    int myId = 12300, n;
 
     /* poniamo il server in ascolto delle richieste dei client */
     listen(socketfd, 10);
@@ -67,8 +70,9 @@ int main (int argc, char *argv[]) {
             write(fd,&myId,sizeof(int));
             // Inizio contrattazione offerte
             while(1){
+              // Leggo dato input dal client
               n = read(fd, &dato, sizeof(int));
-              if(n == 0){
+              if(n == 0){ // Se ho ricevuto 0 byte
                 printf("%d disconnesso\n",myId);
                 break; }
               printf("Ricevuto dal client dato: %d (%d)\n",dato,n);
@@ -85,7 +89,7 @@ int main (int argc, char *argv[]) {
                     write(fd,&notok,sizeof(int));
                   }
                 } else if(dato >= asta.offerte[asta.numofferte-1]+asta.min){
-                  // Offerta valida non prima
+                  // Offerta valida (non e' la prima offerta)
                   asta.offerte[asta.numofferte] = dato;
                   asta.numofferte++;
                   write(fd,&ok,sizeof(int));
