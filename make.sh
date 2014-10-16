@@ -1,4 +1,4 @@
 echo Compiling client:
-gcc -o client client.c
+gcc -o client src/client.c
 echo Compiling server:
-gcc -o server server.c
+gcc -o server src/server.c
