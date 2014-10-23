@@ -7,12 +7,12 @@
 
 int creaMemCond(size_t size)
 {
-    return shmget(KEY,size,0600 | IPC_CREAT);
+    return shmget(KEY,size,IPC_CREAT | 0600);
 }
 
 void * agganciaMemCond(int shmid, int shflag)
 {
-    return shmat(shmid,(void *)0, shflag);
+    return shmat(shmid,(char *)0, shflag);
 }
 
 int scollegaMemCond(void *shmaddr)
@@ -21,6 +21,6 @@ int scollegaMemCond(void *shmaddr)
 }
 
 int rimuoviMemCond(int shmid)
-{ 
+{
     return shmctl(shmid,IPC_RMID,NULL);
 }

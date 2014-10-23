@@ -6,7 +6,7 @@
 #include <sys/sem.h>
 
 
-int semwait(int semid)	
+int semwait(int semid)
 	/* operazione wait (ROSSO) sul semaforo numero_sem */
 {
   struct sembuf sb;
@@ -19,7 +19,7 @@ int semwait(int semid)
 
 
 
-int semsignal(int semid)	
+int semsignal(int semid)
 	/* operazione signal (VERDE) sul semaforo numero_sem */
 {
   struct sembuf sb;
@@ -52,4 +52,3 @@ void semdestroy(int semid)
 {
 	semctl(semid,0,IPC_RMID);
 }
-
