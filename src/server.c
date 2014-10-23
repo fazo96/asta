@@ -11,16 +11,31 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <sys/times.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#include "messaggio.c"
+#include "memcond.c"
 
 #define SERVER_PORT 1313          // numero di porta del server
 
 int main (int argc, char *argv[]) {
-    int socketfd, fd, dato;
+    int socketfd, fd, dato, sem, memcond;
     unsigned int ct_l;
     struct sockaddr_in servizio,ct;   //  record con gli indirizzi
                                             //  del server  e del client
     /* impostazione del socket */
-    if((socketfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+	if((sem=semcreate())==-1) {//creazione semaforo per la memoria codivisa
+		perror("creazione semaforo fallita");
+		return(3);
+	}
+	
+	if(seminit(sem,0)==-1){//inizializzazione semaforo
+		perror("inizializzazione semaforo fallita");
+		return(4);
+	}
+	
+	if((socketfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         perror("chiamata alla system call socket fallita");
         return(1);
     }
@@ -44,9 +59,24 @@ int main (int argc, char *argv[]) {
       int offerte[50];
       int numofferte;
     } asta;
-    asta.prezzo = 10;
+	
+	if((memcond=creaMemCond(sizeof(asta)))==-1){
+		perror("Creazione memoria condivisa fallita");
+		return(5);
+	}
+	
+	if((asta=agganciaMemCond(memcond,0))==-1){
+		perror("non e' possibile collegare la memoria condivisa");
+		return(6);
+	}
+	
+	semwait(sem);	//?????????????? non sono sicuro su questa funzione
+	asta.prezzo = 10;
     asta.min = 1;
     asta.numofferte = 0;
+	fflush(stdout);
+	semsignal(sem);	//?????????????? non sono sicuro su questa funzione
+	
     // Codici protocollo:
     int ok = 1, notok = 0;
     // Altro:
@@ -79,6 +109,7 @@ int main (int argc, char *argv[]) {
               if(dato > 0){
                 // Dato > 0: client fa un'offerta
                 //printf("Dato > 0\n");
+				semwait(sem);	// semaforo ROSSO e aspetta se già rosso
                 if(asta.numofferte == 0){ // prima offerta
                   if(dato >= asta.prezzo + asta.min){
                     asta.offerte[asta.numofferte] = dato;
@@ -105,9 +136,13 @@ int main (int argc, char *argv[]) {
                 printf("%d disconnesso\n",myId);
                 break;
               } else write(fd,&notok,sizeof(int));
+			fflush(stdout);
+			semsignal(sem);	//semaforo VERDE
             }
             /* chusura della connessione */
             close(fd);
+			rimuoviMemCond(memcond); //chiusura memoria condivisa
+			semdestroy(sem);	//chiusura semaforo
         }
     }
 }
