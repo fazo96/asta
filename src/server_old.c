@@ -19,7 +19,6 @@
 int main (int argc, char *argv[]) {
     int socketfd, fd, dato, sem, memcond;
     unsigned int ct_l;
-	void * prova_asta;	//non lo so se è giusto
     struct sockaddr_in servizio,ct;   //  record con gli indirizzi
                                             //  del server  e del client
     /* impostazione del socket */
@@ -27,12 +26,12 @@ int main (int argc, char *argv[]) {
 		perror("creazione semaforo fallita");
 		return(3);
 	}
-
+	
 	if(seminit(sem,0)==-1){//inizializzazione semaforo
 		perror("inizializzazione semaforo fallita");
 		return(4);
 	}
-
+	
 	if((socketfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         perror("chiamata alla system call socket fallita");
         return(1);
@@ -57,22 +56,24 @@ int main (int argc, char *argv[]) {
       int offerte[50];
       int numofferte;
     } asta;
-
+	
 	if((memcond=creaMemCond(sizeof(asta)))==-1){
 		perror("Creazione memoria condivisa fallita");
 		return(5);
 	}
-
-	if((prova_asta=agganciaMemCond(memcond,0))==-1){
-		perror("non e' possibile collegarsi la memoria condivisa");
+	
+	if((asta=agganciaMemCond(memcond,0))==-1){
+		perror("non e' possibile collegare la memoria condivisa");
 		return(6);
 	}
-
-  *prova_asta = asta;
-	prova_asta->prezzo = 10;
-    prova_asta->min = 1;
-    prova_asta->numofferte = 0;
-
+	
+	semwait(sem);	//?????????????? non sono sicuro su questa funzione
+	asta.prezzo = 10;
+    asta.min = 1;
+    asta.numofferte = 0;
+	fflush(stdout);
+	semsignal(sem);	//?????????????? non sono sicuro su questa funzione
+	
     // Codici protocollo:
     int ok = 1, notok = 0;
     // Altro:
@@ -106,19 +107,19 @@ int main (int argc, char *argv[]) {
                 // Dato > 0: client fa un'offerta
                 //printf("Dato > 0\n");
 				semwait(sem);	// semaforo ROSSO e aspetta se già rosso
-                if(prova_asta->numofferte == 0){ // prima offerta
-                  if(dato >= prova_asta->prezzo + prova_asta->min){
-                    prova_asta->offerte[prova_asta->numofferte] = dato;
-                    prova_asta->numofferte++;
+                if(asta.numofferte == 0){ // prima offerta
+                  if(dato >= asta.prezzo + asta.min){
+                    asta.offerte[asta.numofferte] = dato;
+                    asta.numofferte++;
                     write(fd,&ok,sizeof(int));
                   } else {
                     printf("Offerta non valida\n");
                     write(fd,&notok,sizeof(int));
                   }
-                } else if(dato >= prova_asta->offerte[prova_asta->numofferte-1]+prova_asta->min){
+                } else if(dato >= asta.offerte[asta.numofferte-1]+asta.min){
                   // Offerta valida (non e' la prima offerta)
-                  prova_asta->offerte[prova_asta->numofferte] = dato;
-                  prova_asta->numofferte++;
+                  asta.offerte[asta.numofferte] = dato;
+                  asta.numofferte++;
                   write(fd,&ok,sizeof(int));
                 } else {
                   printf("Offerta non valida\n");
@@ -126,7 +127,7 @@ int main (int argc, char *argv[]) {
                 }
               } else if(dato == 0){
                 // Client chiede numero offerte
-                write(fd,&prova_asta->numofferte,sizeof(int));
+                write(fd,&asta.numofferte,sizeof(int));
               } else if(dato == -1){
                 // Client chiede disconnessione
                 printf("%d disconnesso\n",myId);
