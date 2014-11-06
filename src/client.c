@@ -15,9 +15,18 @@ int main(){
     struct sockaddr_in  client,server;
     int port = 1313,sockfd,bin,con;
     char address[] = "127.0.0.1";
-    
-    printf("Inserisci IP del server: ");
-    gets(address);
+
+    printf("Benvenuto. Protocollo di comunicazione:\n");
+    printf("Server risponde -2: OK\n");
+    printf("Server risponde -1: NOT OK\n");
+    printf("Invia -4 per avere il valore dell'offerta minima possibile\n");
+    printf("Invia -1 per chiedere la disconnessione\n");
+    printf("Invia -2 per chiedere il valore dell'offerta piu alta\n");
+    printf("Invia -3 per chiedere il tuo ID\n");
+    printf("Invia -4 per chiedere l'ID dell'offerente vincente\n");
+    printf("Invia un numero >0 per fare un'offerta!\n");
+    printf("\nInserisci IP del server: ");
+    scanf("%s",address);
     printf("Inserisci porta: ");
     scanf("%d",&port);
     printf("Inizializzazione socket (%s:%d)...\n",address,port);

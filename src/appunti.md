@@ -32,3 +32,4 @@ Codifica:
 - Client manda -3 per chiedere proprio ID
 - Client manda -4 per chiedere minima offerta valida
 - Client manda -5 per chiedere l'ID dell'offerente vincente
+- Client manda numero >0 per fare un'offerta

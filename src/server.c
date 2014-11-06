@@ -13,7 +13,6 @@
 #include <sys/times.h>
 #include <sys/ipc.h>
 #include <sys/file.h>
-#include <sys/sem.h>
 #include <signal.h>
 
 #define SERVER_PORT 1313          // numero di porta del server
@@ -55,6 +54,12 @@ int main (int argc, char *argv[]) {
 
   Asta asta;
 
+  struct flock fl;
+  fl.l_type = F_WRLCK;
+  fl.l_whence = SEEK_SET;
+  fl.l_start = 0;
+  fl.l_len = sizeof(asta);
+
   printf("Inizializzate strutture dati\n");
 	filed = open("dati.dat",O_CREAT|O_RDWR,S_IRWXU /*| S_IRWXO*/);
   printf("Aperto file\n");
@@ -94,11 +99,11 @@ int main (int argc, char *argv[]) {
           write(fd,&myId,sizeof(int)); // invio ID del client al client
           // Inizio contrattazione offerte
           while(1){
+            // Leggo dato input dal client
+            n = read(fd, &dato, sizeof(int));
             lseek(filed,0,SEEK_SET);
             read(filed,&asta,sizeof(asta));
             lseek(filed,0,SEEK_SET);
-            // Leggo dato input dal client
-            n = read(fd, &dato, sizeof(int));
             if(n == 0){ // Se ho ricevuto 0 byte
               printf("%d disconnesso\n",myId);
               break; }
@@ -108,10 +113,14 @@ int main (int argc, char *argv[]) {
               if(asta.numofferte == 0){ // prima offerta
                 if(dato >= asta.prezzo + asta.min){
                   // ROSSO
+                  fl.l_type = F_WRLCK;
+                  fcntl(filed, F_SETLKW, &fl);
                   asta.offerte[asta.numofferte].soldi = dato;
                   asta.offerte[asta.numofferte].id = myId;
                   asta.numofferte++;
                   write(filed,&asta,sizeof(asta));
+                  fl.l_type = F_UNLCK;
+                  fcntl(filed, F_SETLKW, &fl);
                   // VERDE
                   write(fd,&ok,sizeof(int));
                 } else {
@@ -121,10 +130,14 @@ int main (int argc, char *argv[]) {
               } else if(dato >= asta.offerte[asta.numofferte-1].soldi+asta.min){
                 // Offerta valida (ma non e' la prima offerta)
                 // ROSSO
+                fl.l_type = F_WRLCK;
+                fcntl(filed, F_SETLKW, &fl);
                 asta.offerte[asta.numofferte].soldi = dato;
                 asta.offerte[asta.numofferte].id = myId;
                 asta.numofferte++;
                 write(filed,&asta,sizeof(asta));
+                fl.l_type = F_UNLCK;
+                fcntl(filed, F_SETLKW, &fl);
                 // VERDE
                 write(fd,&ok,sizeof(int));
               } else {
@@ -154,6 +167,8 @@ int main (int argc, char *argv[]) {
             } else write(fd,&notok,sizeof(int));
           }
           close(fd);
+          fl.l_type = F_UNLCK;
+          fcntl(filed, F_SETLKW, &fl);
           close(filed);
           printf("Processo %d chiuso correttamente!\n",myId);
       }
