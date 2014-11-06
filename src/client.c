@@ -39,7 +39,11 @@ int main(){
       while(1){
         n = read(sockfd,&r,sizeof(int));
         if(n > 0){
-          printf("Messaggio dal Server: %d (%d)\n",r,n);
+          printf("Messaggio dal Server: %d\n",r,n);
+        } else {
+          close(sockfd);
+          printf("Connessione chiusa\n");
+          break;
         }
       }
     }
