@@ -4,6 +4,8 @@ Applicazione client/server scritta in C che gestisce un'asta.
 
 Enrico Fasoli, Stefano Frittoli, Nicol Galli, Fernando Di Lillo
 
+Il programma e il sorgente sono disponibili [online](https://github.com/fazo96/asta)
+
 ### Compilazione
 
 Utilizzare lo script `make.sh` per compilare il software.
