@@ -1,21 +1,12 @@
-## Documentazione
+# Gestione Asta
 
-http://markcloud.meteor.com/d/eNXxxrjE9yqXaPjpD
+Applicazione client/server scritta in C che gestisce un'asta.
 
-# To do
+Enrico Fasoli, Stefano Frittoli, Nicol Galli, Fernando Di Lillo
 
-- scrivere definizione precisa protocollo (Fasoli)
-- organizzare e commentare il codice
+### Compilazione
 
-## Client
-
-- miglioramenti interfaccia
-
-## Server
-
-- Collegare sottoprocessi alla shared memory e scollegarli quando finiscono (Lillo)
-- gestire l'accesso con i semafori
-- Gestire offerte con uno struct che segna anche l'ID dell'offerente
+Utilizzare lo script `make.sh` per compilare il software.
 
 ### Protocollo
 
