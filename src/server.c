@@ -161,7 +161,7 @@ int main (int argc, char *argv[]) {
               // Client chiede minima offerta valida
               int v = asta.offerte[asta.numofferte-1].soldi+asta.min;
               write(fd,&v,sizeof(int));
-            } else if(dato == -5){
+            } else if(dato == -5 && asta.numofferte > 0){
               // Client chiede offerente vincente
               write(fd,&asta.offerte[asta.numofferte-1].id,sizeof(int));
             } else write(fd,&notok,sizeof(int));

@@ -23,7 +23,7 @@ int main(){
     printf("Invia -1 per chiedere la disconnessione\n");
     printf("Invia -2 per chiedere il valore dell'offerta piu alta\n");
     printf("Invia -3 per chiedere il tuo ID\n");
-    printf("Invia -4 per chiedere l'ID dell'offerente vincente\n");
+    printf("Invia -5 per chiedere l'ID dell'offerente vincente\n");
     printf("Invia un numero >0 per fare un'offerta!\n");
     printf("\nInserisci IP del server: ");
     scanf("%s",address);
