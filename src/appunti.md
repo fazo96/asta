@@ -24,8 +24,8 @@ A ogni messaggio inviato corrisponde UN messaggio di risposta __SEMPRE__
 
 Codifica:
 
-- -2 (Si)
-- -1 (No)
+- Server risponde -2: Ok / Successo / Vero
+- Server risponde -1: Errore / No / Falso
 - Client manda 0 per chiedere numero offerte
 - Client manda -1 per chiedere la disconnessione
 - Client manda -2 per chiedere valore della più alta offerta

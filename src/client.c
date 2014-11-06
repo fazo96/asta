@@ -15,7 +15,14 @@ int main(){
     struct sockaddr_in  client,server;
     int port = 1313,sockfd,bin,con;
     char address[] = "127.0.0.1";
+    
+    printf("Inserisci IP del server: ");
+    gets(address);
+    printf("Inserisci porta: ");
+    scanf("%d",&port);
+    printf("Inizializzazione socket (%s:%d)...\n",address,port);
 
+    // Socket
     sockfd = socket(AF_INET,SOCK_STREAM,0);
     // Client setup
     memset(&client,0,sizeof(client));
@@ -29,17 +36,18 @@ int main(){
     server.sin_addr.s_addr = inet_addr(address);
     server.sin_port = htons(port);
     // Connessione
+    printf("Tentativo di connessione a %s:%d...\n",address,port);
     con = connect(sockfd,(struct sockaddr*) &server, sizeof(server));
     if(con != 0){
       printf("Connessione fallita\n");
-      //exit(-1);
-    }
+      return -1;
+    } else printf("Connesso a %s:%d\n",address,port);
     if(fork()==0){
       int n,r;
       while(1){
         n = read(sockfd,&r,sizeof(int));
         if(n > 0){
-          printf("Messaggio dal Server: %d\n",r,n);
+          printf("Messaggio dal Server: %d\n",r);
         } else {
           close(sockfd);
           printf("Connessione chiusa\n");
