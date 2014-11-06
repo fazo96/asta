@@ -14,7 +14,8 @@ Testato su OSX e GNU/Linux.
 ### Protocollo
 
 Invio e ricezione di numeri interi via socket
-A ogni messaggio inviato corrisponde UN messaggio di risposta __SEMPRE__
+
+A ogni messaggio inviato corrisponde __UN__ messaggio di risposta __SEMPRE__
 
 Codifica:
 
